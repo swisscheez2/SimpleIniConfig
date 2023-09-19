@@ -24,6 +24,9 @@
     <ClCompile Include="config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="kbinds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="iniconfig.h">
@@ -33,6 +36,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="color.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MD5.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kbinds.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

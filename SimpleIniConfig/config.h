@@ -1,3 +1,5 @@
+#pragma once
+
 #define NOMINMAX
 #include <Windows.h>
 #include <fstream>
@@ -10,6 +12,14 @@
 #include "iniconfig.h"
 #include "color.h"
 #include <variant>
+#include "kbinds.h"
+
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// Your header file content here...
+
 using hash_t = uint32_t;
 namespace shared::hash
 {
@@ -50,9 +60,11 @@ namespace shared::hash
 	}
 }
 
-
 namespace config
 {
+
+
+
 	struct item_t
 	{
 		item_t() = default;
@@ -104,10 +116,14 @@ namespace config
 	template< typename t >
 	uint32_t add_item(const std::string name, const hash_t type, const t def, const std::string section_name)
 	{
-		//LOG( fmt::format( "{} {}", name, hash ) );
 
+		for (size_t i = 0; i < get_items().size(); ++i) { // fix in case of multi init 
+			if (get_items()[i].m_name == name && get_items()[i].m_type == type && get_items()[i].m_section == section_name) {
+				// Item already exists, return its index
+				return static_cast<uint32_t>(i);
+			}
+		}
 		get_items().push_back(item_t(name, type, std::make_any<t>(def), section_name));
-
 		return static_cast<uint32_t>(get_items().size()) - 1u;
 	}
 
@@ -128,7 +144,7 @@ namespace config
 	/// <param name="index">Index of the config item</param>
 	/// <returns>Config item</returns>
 	item_t& get_item(const uint32_t index);
-	int does_item_exist(const std::string name);
+	int does_item_exist(const std::string& section, const std::string& key);
 
 	/// <summary>
 	/// Saves current config
@@ -141,7 +157,7 @@ namespace config
 	/// </summary>
 	/// <param name="config">Name of the config</param>
 	/// <returns>Was config loaded</returns>
-	bool load(const std::string_view config);
+	bool load_settings(const std::string_view config);
 
 	/// <summary>
 	/// Sets the name of the current config directory
@@ -162,8 +178,17 @@ namespace config
 		std::fill(vec.begin(), vec.begin() + s, fill);
 		return vec;
 	}
-}
+	inline shared::col_t create_col_vector(const shared::col_t& fill) {
+		return shared::col_t(fill);
+	}
+	template<typename t>
+	t& ref(const uint32_t index) {
+		return get_items().at(index).get<t>();
+	}
 
+	std::string MD5HashToUpper(const std::string& input);
+
+}
 
 
 /// <summary>
@@ -185,14 +210,13 @@ namespace config
 #define HASH( str ) shared::hash::get( str )
 
 
-#define ADD_CFG_ITEM(type, name, def, section) const uint32_t name = config::add_item<type>((#name),CT_HASH(#type), def, (#section)); // returns index key 
+#define ADD_CFG_ITEM(type, name, def, section) const uint32_t c_##section##_##name = config::add_item<type>((#name),CT_HASH(#type), def, (#section)); // returns index key 
 
 #define ADD_CFG_ITEM_VEC(type, datatype, size, name, def, section) \
     const uint32_t name = config::add_item<std::vector<datatype>>((#name), CT_HASH(#type), config::create_filled_vector<datatype, size>(def), (#section));
-
-//hashed
 
 #define ADD_CFG_ITEM_HASHED(type, name, def, section) const uint32_t name = config::add_item<type>(CT_HASH(#name),CT_HASH(#type), def, CT_HASH(#section)); // returns index key 
 
 #define ADD_CFG_ITEM_VEC_HASHED(type, datatype, size, name, def, section) \
     const uint32_t name = config::add_item<std::vector<datatype>>(CT_HASH(#name), CT_HASH(#type), config::create_filled_vector<datatype, size>(def), CT_HASH(#section));
+#endif // CONFIG_H

@@ -149,12 +149,15 @@
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="iniconfig.cpp" />
+    <ClCompile Include="kbinds.cpp" />
     <ClCompile Include="SimpleIniConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="color.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="iniconfig.h" />
+    <ClInclude Include="kbinds.h" />
+    <ClInclude Include="MD5.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
